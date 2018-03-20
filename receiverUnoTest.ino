@@ -8,7 +8,7 @@
 #define USE_SERIAL_CMD  1 // 1: use serial for control  0: just use arduino to control(release ROM and RAM space)
 unsigned long tickStartTime = millis(); // get timestamp;
 static void Init();
-const byte numChars = 64;
+const byte numChars = 32;
 char receivedChars[numChars];
 char tempChars[numChars];        // temporary array for use when parsing
 char messageFromMega[numChars] = {0};
@@ -16,15 +16,20 @@ int integerFromMega = 0;
 boolean newData = false;
 
 void setup() {
-        Wire.begin();      // join i2c bus (address optional for master)
+       // Wire.begin();      // join i2c bus (address optional for master)
         Serial.begin(9600); // start serial port at 9600 bps
+       // uArmInit();
        // pinMode(2,INPUT);
-        Init(); // Don't remove
+       Init(); // Don't remove
+        moveTo(0,150,150,50);
+        Serial.println("@1");
+        Serial.println("please input <processChar,boxNumber>");
        
 }
 
 void loop() {
         run();
+        
         recvWithStartEndMarkers();
         if (newData == true) {
         strcpy(tempChars, receivedChars);
@@ -33,6 +38,7 @@ void loop() {
         parseData();
         showParsedData();
         newData = false;
+        Serial.println("please input <processChar,boxNumber>");
     }
       
 
@@ -44,7 +50,8 @@ void recvWithStartEndMarkers() {
     char startMarker = '<';
     char endMarker = '>';
     char rc;
- 
+    //Serial.println("please input <processChar,boxNumber>");
+    while(Serial.available() == 0){}
     while (Serial.available() > 0 && newData == false) {
         rc = Serial.read();
 
@@ -90,9 +97,11 @@ void parseData() {      // split the data into its parts
 
 void showParsedData() {
     Serial.print("I am ");
-    if (messageFromMega == 's'){
+    //char slicing[numChars] = {'s','\0'};
+    //char dicing[numChars] = {'d','\0'};
+    if (strcmp(messageFromMega,"s") == 0){
       Serial.print("slicing ");
-    } else if (messageFromMega == 'd'){
+    } else if (strcmp(messageFromMega,"d") == 0){
       Serial.print("dicing ");
     }else{
       Serial.print("not sure what I am doing with ");
