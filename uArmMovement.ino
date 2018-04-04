@@ -53,7 +53,7 @@ void loop(){
     // this temporary copy is necessary to protect the original data
     // because strtok() used in parseData() replaces the commas with \0
     parseData();
-    showParsedData();
+    //showParsedData();
     
     //Serial.print("Choose box ... ");
     //Serial.println(receivedChars);
@@ -65,6 +65,7 @@ void loop(){
     } else {
       Serial.print("Inoperable process selected you chose: ");
       Serial.println(cutFromMega);
+      Serial.write('f');
     }
     if (boxFromMega == 1){
       Serial.print("Get food from box 1, cut ");

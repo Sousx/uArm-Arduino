@@ -117,7 +117,7 @@ void setup() {
 void loop() {
   //Serial.print(Serial.peek());
   //delay(500);
-  while(Serial.available() == 0){}
+  while (Serial.available() == 0) {}
   while ((Serial.available() > 0) || inputted == false) {
     //Serial.println(Serial.peek());
     msg_byte = Serial.read();
@@ -135,15 +135,15 @@ void loop() {
       Serial.println(msg_str);
       msg_str = "";
       msg_byte = 0;
-      Serial.println("");
-      Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
+      //      Serial.println("");
+      //      Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
       inputted = true;
     }
   }
-
+  Serial.println("Waiting for input from Uno");
   while (Serial.available() == 0) {}
   char rcv = Serial.read();
-  strcpy(cutFromMega, rcv); //Lets Mega know we're ready to turn on the actuators
+  //strcpy(cutFromMega, rcv); //Lets Mega know we're ready to turn on the actuators
   Serial.print("Input from Uno: ");
   if (rcv == 'd') {
     //    delay(1000);
@@ -176,6 +176,8 @@ void loop() {
     Serial.print("Incorrect input from Uno, recieved: ");
   }
   Serial.println(rcv);
+  Serial.println("");
+  Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
   inputted = false;
 }
 
