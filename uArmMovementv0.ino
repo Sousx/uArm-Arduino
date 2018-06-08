@@ -41,7 +41,7 @@ void setup()
   moveTo(0, 150, 150, 50); //Neutral Position coordinates
   Serial.println("@1"); // report ready
   //reportPos(); //Serial Prints the current position
-  Serial.println("Please input 1 or 2");
+  Serial.println("Please input <1> or <2>");
 }
 
 void loop(){
@@ -83,7 +83,7 @@ void loop(){
       Serial.println("You didn't pick a food box, jackass.");
     }
     //Serial.write(cutFromMega);
-    Serial.println("Please input 1 or 2");
+    Serial.println("Please input <1> or <2>");
     newData = false;
   }
   
