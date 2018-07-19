@@ -26,22 +26,22 @@ void setup()
 {
 
   Serial.begin(9600);
-  Serial.println("Started");
+  //Serial.println("Started");
 
   //1. First Test is a simple run of serial communication
   
-  testSerialUno();
+  //testSerialUno();
 
   //2. Testing if a command from the uArm is interpreted by the Mega to run the actuator
 
-  //configureUArm();//this goes to loop to execute commands made by team before
+  configureUArm();//this goes to loop to execute commands made by team before
   
 }
 
 void loop(){
-  while(!Serial.available()) {
-  }
-  Serial.println(Serial.read());
+  //while(!Serial.available()) {
+  //}
+  //Serial.println(Serial.read());
   run(); // Don't remove
   recvWithStartEndMarkers();
  
@@ -53,15 +53,15 @@ void loop(){
     parseData();
 
     if (boxFromMega == 1){
-      Serial.println("Get food from box 1");
+      //Serial.println("Get food from box 1");
       getFood(box1);
     }else if (boxFromMega == 2){
-      Serial.println("Get food from box 2");
+      //Serial.println("Get food from box 2");
       getFood(box2);
     } else {
-      Serial.println("You didn't pick a food box, jackass.");
+      //Serial.println("You didn't pick a food box, jackass.");
     }
-    Serial.println("Please input <1> or <2>");
+    //Serial.println("Please input <1> or <2>");
     newData = false;
   }
 }
@@ -86,9 +86,9 @@ void configureUArm() {
   Init(); // Don't remove
    //TODO
   moveTo(0, 150, 150, 50); //Neutral Position coordinates
-  Serial.println("@1"); // report ready
+  //Serial.println("@1"); // report ready
   reportPos(); //Serial Prints the current position
-  Serial.println("Please input <1> or <2>");
+  //Serial.println("Please input <1> or <2>");
 }
 
 void getFood(int storage[])
@@ -97,9 +97,9 @@ void getFood(int storage[])
   int storageZ = storage[2];
   moveTo(storage[0],storage[1],storageZ);  //Move to Box 
   delay(1000);
-  Serial.println("@1"); // report ready
+  //Serial.println("@1"); // report ready
   reportPos(); //Serial Prints the current position
-  Serial.println(boxFromMega);
+  //Serial.println(boxFromMega);
   while (getTip()) {
     storageZ = storageZ - 1;
     moveTo(storage[0],storage[1],storageZ, 25);  //Move to Box
@@ -115,7 +115,7 @@ void getFood(int storage[])
   pumpOff();
   delay(1000);
   moveTo(0, 150, 150); //Neutral Position coordinates
-  Serial.println("@1"); // report ready
+  //Serial.println("@1"); // report ready
   reportPos(); //Serial Prints the current position
 }
 
@@ -166,8 +166,8 @@ void parseData() {      // split the data into its parts
 //============
 
 void showParsedData() {
-    Serial.print("Food from box: ");
-    Serial.println(boxFromMega);
+    //Serial.print("Food from box: ");
+    //Serial.println(boxFromMega);
 }
 
 

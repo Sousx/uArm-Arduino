@@ -39,15 +39,15 @@ void setup() {
   Serial.println("Started");
   //1. First Test is a simple run of serial communication
   
-  testSerialMega();
+  //testSerialMega();
 
 
   //2. Testing if a command from the uArm is interpreted by the Mega to run the actuator
 
-  //configureActuator(); // set up actuator
-  //if(uArmPickup() == SUCCESS) { //if uArm gets produce to aisle for cutting
-  //  forwardAndBack(); //cut it
-  //}
+  configureActuator(); // set up actuator
+  if(uArmPickup(1) == SUCCESS) { //if uArm gets produce to aisle for cutting
+    forwardAndBack(); //cut it
+  }
   
 }
 void loop() {
@@ -101,12 +101,17 @@ void forwardAndBack() {
 String waitForSerialCommand() {
   String stringIn;
   unsigned long timeNow, timeStart = 0;
-  if(!Serial1.available()) {
+  while(!Serial1.available()) {
     Serial.println("Waiting for comms. input");
   }
+  //while(!Serial1.available()) {
+  //}
   timeStart = millis();
+  Serial.println("Time start in milliseconds is: ");
+  Serial.println(timeStart);
   while(!Serial1.available()) { //wait for uno to send input
     if(timeNow - timeStart > UARM_TIMEOUT) {
+      Serial.println("Surpassed timeout for uArm");
       return "";
     }
     else {
@@ -114,7 +119,8 @@ String waitForSerialCommand() {
     }
   }
   while(Serial1.available()) { //input has arrived
-    stringIn.concat(Serial1.read()); //input arrives one char at a time, will be appended to string (may not be literal, if it isnt, then char*)
+    Serial.println("Received Input");
+    stringIn.concat(char(Serial1.read())); //input arrives one char at a time, will be appended to string (may not be literal, if it isnt, then char*)
   }
   return stringIn;
 }

@@ -28,45 +28,45 @@ static void replyError(int serialNum, unsigned int errorCode)
 {
     if (serialNum > 0)
     {
-        Serial.print("$");
-        Serial.print(serialNum);
-        Serial.print(" ");
+       //Serial.print("$");
+       //Serial.print(serialNum);
+       //Serial.print(" ");
     }
 
-    Serial.print("E");
-    Serial.println(errorCode);   
+   //Serial.print("E");
+   //Serial.println(errorCode);   
 }
 
 static void replyOK(int serialNum)
 {
     if (serialNum > 0)
     {
-        Serial.print("$");
-        Serial.print(serialNum);
-        Serial.print(" ");
+       //Serial.print("$");
+       //Serial.print(serialNum);
+       //Serial.print(" ");
     }
-    Serial.println("OK");   
+   //Serial.println("OK");   
 }
 
 static void replyResult(int serialNum, String result)
 {
     if (serialNum > 0)
     {    
-        Serial.print("$");
-        Serial.print(serialNum);
-        Serial.print(" ");
+       //Serial.print("$");
+       //Serial.print(serialNum);
+       //Serial.print(" ");
     }
-    Serial.print("OK ");
-    Serial.println(result);   
+   //Serial.print("OK ");
+   //Serial.println(result);   
 }
 
 static void reportResult(int reportCode, String result)
 {
 
-    Serial.print("@");
-    Serial.print(reportCode);
-    Serial.print(" ");
-    Serial.println(result);   
+   //Serial.print("@");
+   //Serial.print(reportCode);
+   //Serial.print(" ");
+   //Serial.println(result);   
 }
 
 static unsigned char cmdMove(int serialNum, int parameterCount, double value[4])
@@ -744,7 +744,7 @@ void reportPos()
 
     debugPrint("angle = %f", frontEndAngle);
     char result[RESULT_BUFFER_SIZE];
-    msprintf(result, "X%f Y%f Z%f R%f", x, y, z, frontEndAngle);   
+    //msprintf(result, "X%f Y%f Z%f R%f", x, y, z, frontEndAngle);   
 
     reportResult(REPORT_POS, result);    
 
@@ -785,11 +785,11 @@ static void HandleMoveCmd(int cmdCode, int serialNum, int parameterCount, double
 
     if (result > 0)
     {
-        Serial.print("$");
-        Serial.print(serialNum);
-        Serial.print(" ");
-        Serial.print("E");
-        Serial.println(result);
+       //Serial.print("$");
+       //Serial.print(serialNum);
+       //Serial.print(" ");
+       //Serial.print("E");
+       //Serial.println(result);
     }
 }
 
@@ -866,11 +866,11 @@ static void HandleSettingCmd(int cmdCode, int serialNum, int parameterCount, dou
 
     if (result > 0)
     {
-        Serial.print("$");
-        Serial.print(serialNum);
-        Serial.print(" ");
-        Serial.print("E");
-        Serial.println(result);
+       //Serial.print("$");
+       //Serial.print(serialNum);
+       //Serial.print(" ");
+       //Serial.print("E");
+       //Serial.println(result);
     }
 }
 
