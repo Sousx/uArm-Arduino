@@ -126,7 +126,9 @@ void recvWithStartEndMarkers() {
   char endMarker = '>';
   char rc;
 
-  while (Serial.available() == 0) {} //do nothing until input
+  while (Serial.available() == 0) {
+    Serial.write("r");  
+  } //do nothing until input
   while ((Serial.available() > 0) && newData == false){
     rc = Serial.read();
     if (recvInProgress == true) {

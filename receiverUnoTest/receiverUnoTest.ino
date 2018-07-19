@@ -22,8 +22,8 @@ void setup() {
        // pinMode(2,INPUT);
        Init(); // Don't remove
         moveTo(0,150,150,50);
-        Serial.println("@1");
-        Serial.println("please input <processChar,boxNumber>");
+       //Serial.println("@1");
+       //Serial.println("please input <processChar,boxNumber>");
        
 }
 
@@ -38,7 +38,7 @@ void loop() {
         parseData();
         showParsedData();
         newData = false;
-        Serial.println("please input <processChar,boxNumber>");
+       //Serial.println("please input <processChar,boxNumber>");
     }
       
 
@@ -96,26 +96,26 @@ void parseData() {      // split the data into its parts
 //============
 
 void showParsedData() {
-    Serial.print("I am ");
+   //Serial.print("I am ");
     //char slicing[numChars] = {'s','\0'};
     //char dicing[numChars] = {'d','\0'};
     if (strcmp(messageFromMega,"s") == 0){
-      Serial.print("slicing ");
+     //Serial.print("slicing ");
     } else if (strcmp(messageFromMega,"d") == 0){
-      Serial.print("dicing ");
+     //Serial.print("dicing ");
     }else{
-      Serial.print("not sure what I am doing with ");
+     //Serial.print("not sure what I am doing with ");
     }
-    Serial.print("the produce. You inputted: ");
-    Serial.println(messageFromMega);
+   //Serial.print("the produce. You inputted: ");
+   //Serial.println(messageFromMega);
     if (integerFromMega < 3){
-      Serial.print("I am getting the produce from box ");
+     //Serial.print("I am getting the produce from box ");
     } else {
-      Serial.print("I am not sure where to get the produce from. You inputted: ");
+     //Serial.print("I am not sure where to get the produce from. You inputted: ");
     }
-    Serial.println(integerFromMega);
-//    Serial.print("Float ");
-//    Serial.println(floatFromPC);
+   //Serial.println(integerFromMega);
+//   //Serial.print("Float ");
+//   //Serial.println(floatFromPC);
 }
 
 // time out every TICK_INTERVAL(50 ms default)

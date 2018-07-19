@@ -111,7 +111,7 @@ void setup() {
   digitalWrite(ENABLE_MOTORS, LOW);// LOW = enabled
 
   Serial.begin(9600);
-  Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>!");
+ //Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>!");
 }
 
 void loop() {
@@ -130,21 +130,21 @@ void loop() {
       //delay(500);
     }
     if (Serial.peek() == -1) {
-      Serial.println("");
-      Serial.print("you inputted: ");
-      Serial.println(msg_str);
+     //Serial.println("");
+     //Serial.print("you inputted: ");
+     //Serial.println(msg_str);
       msg_str = "";
       msg_byte = 0;
-      //      Serial.println("");
-      //      Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
+      //     //Serial.println("");
+      //     //Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
       inputted = true;
     }
   }
-  Serial.println("Waiting for input from Uno");
+ //Serial.println("Waiting for input from Uno");
   while (Serial.available() == 0) {}
   char rcv = Serial.read();
   //strcpy(cutFromMega, rcv); //Lets Mega know we're ready to turn on the actuators
-  Serial.print("Input from Uno: ");
+ //Serial.print("Input from Uno: ");
   if (rcv == 'd') {
     //    delay(1000);
     //    //move actuator 1 in then out
@@ -158,7 +158,7 @@ void loop() {
     //    digitalWrite(DIR_M1, dir1);
     //    analogWrite(PWM_M1, pwm1); // write to pins
     //    delay(5000); //allows enough time for actuator to retract
-    Serial.println("I made it in hereD!");
+   //Serial.println("I made it in hereD!");
   } else if (rcv == 's') {
     //    delay(1000);
     //    dir3 = 1;
@@ -171,13 +171,13 @@ void loop() {
     //    digitalWrite(DIR_M3, dir3);
     //    analogWrite(PWM_M3, pwm3);
     //    delay(5000);
-    Serial.println("I made it in hereS!");
+   //Serial.println("I made it in hereS!");
   } else if (rcv == 'f') {
-    Serial.print("Incorrect input from Uno, recieved: ");
+   //Serial.print("Incorrect input from Uno, recieved: ");
   }
-  Serial.println(rcv);
-  Serial.println("");
-  Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
+ //Serial.println(rcv);
+ //Serial.println("");
+ //Serial.println("please send an input for the UNO with the format <processingChar,boxNumber>");
   inputted = false;
 }
 

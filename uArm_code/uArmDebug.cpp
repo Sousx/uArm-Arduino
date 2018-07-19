@@ -185,7 +185,7 @@ void mprint(char *fmt, ...)
   temp[j] = '\0';
   strcat(buf, temp);
 
-	PrintSerial.println(buf);
+	//PrintSerial.println(buf);
 }
 
 
