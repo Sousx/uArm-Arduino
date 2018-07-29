@@ -47,6 +47,7 @@ void loop(){
  
    
   if (newData == true) {
+    //Serial.println("Here");
     strcpy(tempChars, receivedChars);
     // this temporary copy is necessary to protect the original data
     // because strtok() used in parseData() replaces the commas with \0
@@ -55,9 +56,11 @@ void loop(){
     if (boxFromMega == 1){
       //Serial.println("Get food from box 1");
       getFood(box1);
+      Serial.write("d");
     }else if (boxFromMega == 2){
       //Serial.println("Get food from box 2");
       getFood(box2);
+      Serial.write("d");
     } else {
       //Serial.println("You didn't pick a food box, jackass.");
     }
@@ -126,12 +129,17 @@ void recvWithStartEndMarkers() {
   char endMarker = '>';
   char rc;
 
-  while (Serial.available() == 0) {
-    Serial.write("r");  
+  Serial.write("r");
+  delay(100);
+  while (!Serial.available()) {  
+    //Serial.flush();
   } //do nothing until input
+  delay(5);
   while ((Serial.available() > 0) && newData == false){
     rc = Serial.read();
+    //Serial.println(rc);
     if (recvInProgress == true) {
+      //Serial.println("Got Here");
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
         ndx++;
@@ -139,12 +147,14 @@ void recvWithStartEndMarkers() {
           ndx = numChars - 1;
         }
       } else {
+        //Serial.println("End");
         receivedChars[ndx] = '\0'; // terminate the string
         recvInProgress = false;
         ndx = 0;
         newData = true;
       }
     } else if (rc == startMarker) {
+      //Serial.println("Start");
       recvInProgress = true;
     }
   }
@@ -159,7 +169,8 @@ void parseData() {      // split the data into its parts
  
     strtokIndx = strtok(tempChars, ","); // this continues where the previous call left off
     boxFromMega = atoi(strtokIndx);     // convert this part to an integer
-
+    //Serial.println("Box from Mega: ");
+    //Serial.println(boxFromMega);
     //strtokIndx = strtok(NULL, ",");
     //floatFromPC = atof(strtokIndx);     // convert this part to a float
 

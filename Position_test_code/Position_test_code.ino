@@ -25,10 +25,12 @@ int EnablePin1 = 13;
 int PWMPinA1 = 11;
 int PWMPinB1 = 3;
 
+String waitForSerialCommand();
+void goToHere(int destination);
 
 
 int startPos = 347;
-int endPos = 610;
+int endPos = 580;
 
 const int actuatorInput = A0;
 const int precision = 2; //set as desired
@@ -46,37 +48,48 @@ void setup() {
   //2. Testing if a command from the uArm is interpreted by the Mega to run the actuator
 
   configureActuator(); // set up actuator
-  if(uArmPickup(1) == SUCCESS) { //if uArm gets produce to aisle for cutting
-    forwardAndBack(); //cut it
-  }
-  
+  resetPosition();
 }
 void loop() {
+  Serial.println("Which box would you like produce from? (1 or 2)");
+  while(!Serial.available())
+  {
+  }
+  uint8_t userInput = Serial.read();
+  if(uArmPickup(userInput) == SUCCESS) { //if uArm gets produce to aisle for cutting
+    forwardAndBack(); //cut it
+  }
 }//end main loop
 
+void resetPosition() {
+  goToHere(startPos);
+  Serial.println("Actuator Ready To Go!");
+}
 void testSerialMega() {
   String stringBack;
   Serial1.write("hello uarm");
-  stringBack = waitForSerialCommand(WORD);
+  stringBack = waitForSerialCommand(/*WORD*/);
  Serial.println("Word has been received");
  Serial.println(stringBack);
   //stringBack = "";
 }
 
-int uArmPickup(uint8_t boxNumber) {
-  if(boxNumber != 1 && boxNumber != 2) { // input data validation
+int uArmPickup(char boxNumber) {
+  if(boxNumber != '1' && boxNumber != '2') { // input data validation
    Serial.print("invalid box number..please input 1 or 2");
   }
   else {
-    if(waitForSerialCommand(!WORD) != "r") {
+    if(waitForSerialCommand(/*!WORD*/) != "r") {
       Serial.print("Did not receive character indicating that the uArm is ready");
       return FAILURE;
     }
     Serial.print("Received input, setting request...");
+    int i = 0;
+    Serial.println("Done");
     Serial1.write("<"); // send command body with number
     Serial1.write(boxNumber);
     Serial1.write(">");
-    if(waitForSerialCommand(!WORD) == "d") { 
+    if(waitForSerialCommand(/*!WORD*/) == "d") { 
       return SUCCESS; //uArm is successful!
     }
     else {
@@ -104,7 +117,7 @@ void forwardAndBack() {
   delay(50);
 }
 
-String waitForSerialCommand(int wordInput) {
+String waitForSerialCommand(/*int wordInput*/) {
   String stringIn;
   unsigned long timeNow, timeStart = 0;
   while(!Serial1.available()) {
@@ -126,20 +139,22 @@ String waitForSerialCommand(int wordInput) {
       timeNow = millis();
     }
   }
-  while(Serial1.available()) { //input has arrived
-   Serial.println("Received Input");
-   if(wordInput) {
-    stringIn.concat(char(Serial1.read())); //input arrives one char at a time, will be appended to string (may not be literal, if it isnt, then char*)
-   }
-   else {
-    char charIn = Serial1.read();
-    Serial.println(charIn);
-    //Serial.println(Serial1.read());
-    Serial.println("Only one letter");
-    Serial.println(stringIn);
-    return stringIn;
-   }
-  }
+  //while(Serial1.available()) { //input has arrived
+  Serial.println("Received Input");
+   //if(wordInput) {
+  char charIn = Serial1.read();
+  stringIn.concat(charIn); //input arrives one char at a time, will be appended to string (may not be literal, if it isnt, then char*)
+   //}
+//   else {
+//    String charIn = Serial1.read();
+//    Serial.println(charIn);
+//    //Serial.println(Serial1.read());
+//    Serial.println("Only one letter");
+//    return charIn;
+//   }
+//  }
+  Serial.println(charIn);
+  Serial.println(stringIn);
   return stringIn;
 }
 
@@ -162,10 +177,10 @@ void goToHere(int destination) {
   bool pushing = false;
   int difference = 0;
   int currentPos = analogRead(actuatorInput);
- Serial.print("Destination is: ");
- Serial.println(destination);
- Serial.print("Actuator is at: ");
- Serial.println(currentPos);  
+  Serial.print("Destination is: ");
+  Serial.println(destination);
+  Serial.print("Actuator is at: ");
+  Serial.println(currentPos);  
   if(destination > currentPos) {
    Serial.println("We need to push");
     pushing = true;
@@ -173,11 +188,16 @@ void goToHere(int destination) {
   else {
    Serial.println("We need to pull");
   }
- Serial.println("This much: ");
+  Serial.println("This much: ");
   difference = destination - currentPos;
- Serial.println(difference);
+  Serial.println(difference);
   while(difference > precision || difference < -precision) {
-    currentPos = analogRead(actuatorInput);
+   if(Serial.read() == "stop") {
+    stopActuator();
+    Serial.print("Actuator has been stoppped");
+    break;
+   }
+   currentPos = analogRead(actuatorInput);
    Serial.println("We are now here");
    Serial.println(currentPos);
     difference = destination - currentPos;
