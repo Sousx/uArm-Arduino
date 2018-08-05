@@ -129,9 +129,10 @@ void recvWithStartEndMarkers() {
   char endMarker = '>';
   char rc;
 
-  Serial.write("r");
-  delay(100);
-  while (!Serial.available()) {  
+  
+  if(!Serial.available()) {  
+    Serial.write("r");
+    delay(1000);
     //Serial.flush();
   } //do nothing until input
   delay(5);
