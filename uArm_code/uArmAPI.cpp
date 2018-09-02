@@ -48,6 +48,9 @@ static unsigned char _moveTo(double x, double y, double z, double speed);
 static void _sort(unsigned int array[], unsigned int len);
 static void _controllerRun();
 
+void checkReset();
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
+
 void initHardware()
 {
 
@@ -108,8 +111,15 @@ void uArmInit()
    \return OUT_OF_RANGE will move to the closest pos
    \return NO_NEED_TO_MOVE if it is already there
  */
+void checkReset() {
+  if(Serial.peek() == 'x') {
+    Serial.read();
+    resetFunc();
+  }
+}
 unsigned char moveTo(double x, double y, double z, double speed)
 {
+  checkReset();
 	unsigned char result = IN_RANGE;
 
 	debugPrint("moveTo: x=%f, y=%f, z=%f, speed=%f", x, y, z, speed);

@@ -25,9 +25,12 @@ int EnablePin1 = 13;
 int PWMPinA1 = 11;
 int PWMPinB1 = 3;
 
+//int 
+
 String waitForUnoCommand();
 void goToHere(int destination);
 
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
 int startPos = 347;
 int endPos = 610;
@@ -40,7 +43,7 @@ int pos = 0;
 void setup() {  
   Serial.begin(9600);
   Serial1.begin(9600);
- Serial.println("Started");
+  Serial.println("Started");
   //1. First Test is a simple run of serial communication
   
   //testSerialMega();
@@ -97,6 +100,10 @@ void loop() {
 //    uint8_t sequence = Serial.read();
 //    return sequence;
 //  }
+
+  void touchSensorInput() {
+    
+  }
 
   void inputTimeOut(unsigned int seconds) {
     unsigned long timeNow, timeStart = 0;
@@ -227,12 +234,34 @@ void stopActuator() {
   analogWrite(PWMPinB1, 0); // speed 0-255
 }
 
+void pauseActuator() {
+  stopActuator();
+  while(Serial.peek() == 'x' || Serial.read() != 's') {
+    if(Serial.read() == 'x') {
+      Serial.println("Resetting...");
+      resetSystem();
+    }
+    Serial.println("Paused");
+  }
+}
+
+void resetSystem() {
+  Serial.write('x'); //write to uno to make it reset
+  resetFunc();
+}
+
 void pushActuator() {
+  if(Serial.read() == 'p') {
+    pauseActuator();
+  }
   analogWrite(PWMPinA1, 255);
   analogWrite(PWMPinB1, 0); // speed 0-255
 }
 
 void pullActuator() {
+  if(Serial.read() == 'p') {
+    pauseActuator();
+  }
   analogWrite(PWMPinA1, 0);
   analogWrite(PWMPinB1, 255);//speed 0-255
 }

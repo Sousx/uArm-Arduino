@@ -109,13 +109,20 @@ void getFood(int storage[])
     delay(10);
   }
   delay(1000);
-  pumpOn();
+  pumpOn(); //apply suction, grab produce
   reportPos();
   delay(1000);
-  moveTo(storage[0],storage[1], 200, 100);
+  
+  moveTo(storage[0],storage[1], 200, 100); //pick up the produce
   delay(1000);
-  moveTo(-116,223,194, 100);
+  moveTo(-116,223,194, 100); //move above the cutting module
+  int armZ = 200;
+  while(armZ != 100) {
+    armZ = armZ - 1;
+    moveTo(-116,223,armZ, 100); //move above the cutting module
+  }
   pumpOff();
+  moveTo(-116,223,194, 100); //move above the cutting module
   delay(1000);
   moveTo(0, 150, 150); //Neutral Position coordinates
   //Serial.println("@1"); // report ready
