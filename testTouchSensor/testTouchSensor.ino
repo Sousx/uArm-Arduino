@@ -43,7 +43,7 @@ void loop() {
     }
     else { // mode == ZERO
       mode = ONE; 
-      if(timeInState > 1) {
+      if(timeLow > 1) {
         Serial.println("Pressed once");
       }
     }

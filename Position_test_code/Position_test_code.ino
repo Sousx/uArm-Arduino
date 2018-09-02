@@ -20,12 +20,23 @@
 #define WORD 1
 #define UARM_TIMEOUT 15000 //CHANGE THIS BASED ON HOW LONG IT WILL TAKE UARM TO COMPLETE ITS JOB
 
+#define touchPin 22
+#define ZERO 0
+#define ONE 1
+#define TWO 2
+#define SERIES 3
+
+#define TOUCH_TIMEOUT 5000
+
+#define SERIAL_MODE 1
+#define TOUCH_SENSOR_MODE 2
+
 //Use the jumpers on the board to select which pins will be used
 int EnablePin1 = 13;
 int PWMPinA1 = 11;
 int PWMPinB1 = 3;
 
-//int 
+int mode = ZERO; 
 
 String waitForUnoCommand();
 void goToHere(int destination);
@@ -50,20 +61,24 @@ void setup() {
 
 
   //2. Testing if a command from the uArm is interpreted by the Mega to run the actuator
-
+  pinMode(touchPin, INPUT);
+  mode = ZERO;
+  
   configureActuator(); // set up actuator
   resetPosition();
+  
 }
 void loop() {
   uint8_t userInput;
   int finalInput;
-  Serial.println("SELECTIONS:");
-  Serial.println("1. Select one box to pick up produce from (1 or 2)");
-  Serial.println("2. Type 's' to initiate 'series mode'");
-  Serial.println("3. Wait 10 seconds to perform default series test (1,2,1,2,1)");
-  inputTimeOut(10); //give user 10 seconds to put something in
-  userInput = Serial.read();
-  if(userInput > 2) {
+  int mode = TOUCH_SENSOR_MODE;
+  if(mode == SERIAL_MODE) {
+    userInput = serialInputMode();
+  }
+  else {
+    userInput = touchSensorInputMode();
+  }
+  if(userInput > 3) {
     userInput = 0;
   }
 //  if(userInput == 's') {
@@ -72,13 +87,16 @@ void loop() {
 //  }
   Serial.println("User Input");
   Serial.println(userInput);
-  if(userInput == 0) { //if a selection wasn't put in
-    Serial.println("Setting Default Sequence");
+//  if(userInput == 0) { //if a selection wasn't put in
+//    Serial.println("Setting Default Sequence");
+//    finalInput = default_sequence;
+//  }
+//  else {
+  finalInput = (int) userInput;
+  if(userInput == 3) {
     finalInput = default_sequence;
   }
-  else {
-    finalInput = (int) userInput;
-  }
+  //}
   Serial.println("Sequence is: ");
   Serial.println(finalInput);
   char inputChar;
@@ -101,9 +119,120 @@ void loop() {
 //    return sequence;
 //  }
 
-  void touchSensorInput() {
-    
+  int serialInputMode() {
+    int userInput= 0;
+    Serial.println("SELECTIONS:");
+    Serial.println("1. Select one box to pick up produce from (1 or 2)");
+    Serial.println("2. Type 's' to initiate 'series mode'");
+    //Serial.println("3. Wait 10 seconds to perform default series test (1,2,1,2,1)");
+    inputTimeOut(10); //give user 10 seconds to put something in
+    userInput = Serial.read();    
   }
+
+  int touchSensorInputMode() {
+    int userInput = 0;
+    int timeLow = 0; //default
+    Serial.println("SELECTIONS:");
+    Serial.println("To count a press on the actuator, hold for at least one second (but not over three)");
+    Serial.println("1. Press once to grab food from box 1, or twice to grab from box 2.");
+    Serial.println("2. Hold for more than three seconds to initiate a default sequence test of (1,2,1,2,1)");
+    while(timeLow != 5) { // while the button hasn't been pressed and a choice hasn't been made
+      int timeHigh = 0;
+      Serial.print("Time low at loop: ");
+      Serial.println(timeLow);
+      Serial.print("user input at loop: ");
+      Serial.println(userInput);
+      unsigned long timeStart, timeNow = 0;
+      timeStart = millis();
+      timeNow = millis();
+      Serial.println("Here");
+      while(timeHigh == 0 && (timeNow - timeStart < TOUCH_TIMEOUT)) { // wait for a press if none, for up to 5 seconds
+        Serial.println("Waiting for press...");
+        timeHigh = timeInState(HIGH);
+        timeNow = millis();
+      }
+      Serial.print("Time held high: ");
+      Serial.println(timeHigh);
+      timeLow = timeInState(LOW);
+      Serial.print("Time held low: ");
+      Serial.println(timeLow);
+      if(timeHigh > 2) {
+        Serial.println("held..entering series mode");
+        userInput = 3;
+      }
+      else if(timeHigh > 0) {  
+        if (userInput == 2) {
+          Serial.println("pushed too many times");
+        }
+        else if(userInput == 1) {
+          userInput = 2; 
+          if(timeLow > 1) {
+            Serial.println("Pressed twice");
+          }
+        }
+        else { // mode == ZERO
+          userInput = 1; 
+          if(timeLow > 1) {
+            Serial.println("Pressed once");
+          }
+        }
+      }
+      else {
+        //timeLow = timeInState(LOW);
+        //Serial.println("inactive");
+      }
+    }
+      Serial.print("Time low at loop: ");
+      Serial.println(timeLow);
+      Serial.print("user input at loop: ");
+      Serial.println(userInput);
+    delay(350);
+    return userInput;
+  }
+
+  int timeInState(int state) {
+    int timeHeld = 0;
+    unsigned long timeNow, timeStart = 0;
+    bool timeOut = false;
+    timeStart = millis();
+    timeNow = millis();
+    Serial.print("Check touch state: ");
+    Serial.println(checkTouch());
+    Serial.print("State chosen: ");
+    Serial.println(state);
+    while((checkTouch() == state) && timeOut == false){ // check if the state of the touch sensor reflects
+                                                        // what you want it to stay at (e.g. off if you want it off)
+      timeNow = millis();
+      if(timeNow - timeStart > TOUCH_TIMEOUT) {
+        Serial.println("held state for too long");
+        return 5;
+      }
+      if(state == HIGH) {
+        Serial.println("still high");
+      }
+      else {
+        Serial.println("still low");
+      }
+    }
+    timeHeld = (timeNow - timeStart) / 1000;
+    Serial.print("Time Held: ");
+    Serial.println(timeHeld);
+    if(timeHeld == 0) {
+      Serial.println("Let go too early");
+    }
+    return timeHeld;
+  }
+  int checkTouch() {
+    int touchValue = digitalRead(touchPin);
+    if (touchValue == HIGH) {
+      Serial.println("TOUCHED");
+      //digitalWrite(ledPin, HIGH);
+    } else {
+      //digitalWrite(ledPin, LOW);
+    }
+    return touchValue;
+  }
+
 
   void inputTimeOut(unsigned int seconds) {
     unsigned long timeNow, timeStart = 0;
